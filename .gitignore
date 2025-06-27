@@ -1,52 +1,234 @@
-# Prerequisites
-*.d
+/*******************************************************
+This program was created by the
+CodeWizardAVR V3.12 Advanced
+Automatic Program Generator
+© Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+Project : 
+Version : 
+Date    : 5/23/2023
+Author  : 
+Company : 
+Comments: 
 
-# Linker output
-*.ilk
-*.map
-*.exp
 
-# Precompiled Headers
-*.gch
-*.pch
+Chip type               : ATmega8A
+Program type            : Application
+AVR Core Clock frequency: 1.000000 MHz
+Memory model            : Small
+External RAM size       : 0
+Data Stack size         : 256
+*******************************************************/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+//Preset libraries
+#include <mega8.h>
+#include <alcd.h>
+#include <delay.h>
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+//Defined names for outputs and inputs
+#define PAD_PORT PORTD
+#define PAD_PIN PIND
+#define PAD_DDR DDRD
+#define BUZZER PORTC.2
+#define Relay PORTC.1
+#define Motor PORTC.0
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+const char Mr_password[5]="1972"; //Initial password
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+//variables
+{
+char write[5]="";
+unsigned char write_in=0;
+unsigned char outputn=1;
+const char keymap[4][4]={
+    {'1','4','7','*'},
+    {'2','5','8','0'},
+    {'3','6','9','#'},
+    {'A','B','C','D'}
+};
+}
+//Micro pin output function
+void keypad_init() {
+    PAD_DDR=0x0F; 
+    PAD_PORT=0xF0; 
+}
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+//Keyboard readable variable
+char Key_recipient() {
+    char col,row;
+    
+    for(col=0;col<4;col++) {
+        PAD_PORT=~(1<<col);
+        delay_ms(5);
+        
+        for(row=0; row<4; row++) {
+            if(!(PAD_PIN&(1<<(row+4)))) {
+                while(!(PAD_PIN&(1<<(row+4)))); 
+                return keymap[row][col];
+            }
+        }
+    }
+    return 0;
+}
+
+//Password cleaning function
+void clear_write() {
+char i;
+    for(i=0;i<5;i++)write[i]=0;
+    write_in=0;
+    lcd_gotoxy(0,1);
+    lcd_puts("    "); 
+}
+
+//A simple output bezier function
+void Beep(unsigned int dur_ms) {
+    BUZZER=1; 
+    delay_ms(dur_ms); 
+    BUZZER=0; 
+}
+
+//Basic output function when unlocking!!
+void unlocked(unsigned int duration){
+      Relay=duration;
+//    Motor=duration;    
+}   
+
+//Start the main reading program
+void main(void)
+{
+{
+//Narration of default bases in AVR
+{
+DDRB=(0<<DDB7) | (0<<DDB6) | (0<<DDB5) | (0<<DDB4) | (0<<DDB3) | (0<<DDB2) | (0<<DDB1) | (0<<DDB0);
+PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
+DDRC=(0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (0<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+PORTC=(0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (1<<DDD3) | (1<<DDD2) | (1<<DDD1) | (1<<DDD0);
+PORTD=(1<<PORTD7) | (1<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (0<<PORTD3) | (0<<PORTD2) | (0<<PORTD1) | (0<<PORTD0);
+TCCR0=(0<<CS02) | (0<<CS01) | (0<<CS00);
+TCNT0=0x00;
+TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (0<<CS10);
+TCNT1H=0x00;
+TCNT1L=0x00;
+ICR1H=0x00;
+ICR1L=0x00;
+OCR1AH=0x00;
+OCR1AL=0x00;
+OCR1BH=0x00;
+OCR1BL=0x00;
+ASSR=0<<AS2;
+TCCR2=(0<<PWM2) | (0<<COM21) | (0<<COM20) | (0<<CTC2) | (0<<CS22) | (0<<CS21) | (0<<CS20);
+TCNT2=0x00;
+OCR2=0x00;
+TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<TOIE0);
+MCUCR=(0<<ISC11) | (0<<ISC10) | (0<<ISC01) | (0<<ISC00);
+UCSRB=(0<<RXCIE) | (0<<TXCIE) | (0<<UDRIE) | (0<<RXEN) | (0<<TXEN) | (0<<UCSZ2) | (0<<RXB8) | (0<<TXB8);
+ACSR=(1<<ACD) | (0<<ACBG) | (0<<ACO) | (0<<ACI) | (0<<ACIE) | (0<<ACIC) | (0<<ACIS1) | (0<<ACIS0);
+SFIOR=(0<<ACME);
+ADCSRA=(0<<ADEN) | (0<<ADSC) | (0<<ADFR) | (0<<ADIF) | (0<<ADIE) | (0<<ADPS2) | (0<<ADPS1) | (0<<ADPS0);
+SPCR=(0<<SPIE) | (0<<SPE) | (0<<DORD) | (0<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<SPR1) | (0<<SPR0);
+TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
+}
+}
+
+lcd_init(16);
+keypad_init();
+ 
+lcd_clear();
+lcd_puts("PASSWORD:");
+lcd_gotoxy(0,0);
+    
+while (1)//loop one
+   {
+       char key = Key_recipient();
+            
+        if(key) {
+            Beep(15);
+            if(key == '#') 
+            { 
+                 
+                char i;
+                unsigned char output = 1;
+                
+                for( i=0; i<4; i++) {
+                    if(write[i] != Mr_password[i]) {
+                        output = 0;
+                        break;
+                    }
+                    
+                }
+                
+                if(output) {
+                    delay_ms(120);
+                    lcd_clear();
+                    lcd_gotoxy(3,0);
+                    lcd_puts("Open");
+                    clear_write();
+                    delay_ms(600); 
+                    lcd_clear();
+                    lcd_gotoxy(7,1);
+                    lcd_puts("Relay:ON");
+                    unlocked(1);
+                    clear_write();
+                    delay_ms(600);
+                }else{
+                                
+                    if(outputn)
+                    {
+                    lcd_clear();
+                    lcd_puts("Wrong!");
+                    Beep(200);
+                    delay_ms(400);
+                    Beep(200);
+                    delay_ms(400);
+                    delay_ms(1000);
+                    lcd_clear();
+                    lcd_puts("PASSWORD:");
+                    clear_write();
+                    delay_ms(600);
+                    }
+                    }
+              
+            }            
+            
+                if(key=='D')
+                {
+                     unsigned char back=1;
+                     if(back){                     
+                     unlocked(0);
+                     delay_ms(200); 
+                     lcd_clear();
+                     lcd_gotoxy(0,1);
+                     lcd_puts("Relay:OFF");
+                     delay_ms(1100);
+                     delay_ms(200);
+                     lcd_clear();
+                     lcd_puts("PASSWORD:");
+                     lcd_gotoxy(0,0);
+                     clear_write();                     
+                     }
+                }     
+                else if(key=='*') { 
+                clear_write();
+                }
+            
+                else if(write_in<4) { 
+                write[write_in]=key;
+                lcd_gotoxy(write_in,1);
+                lcd_putchar('*'); 
+                write_in++;
+                }
+         }   
+        }
+
+   }
+
+   
+/*
+This is a simple code, I explained briefly. 
+You can change the bases.
+This is the default code, implemented with Vision Code.
+*/
+
